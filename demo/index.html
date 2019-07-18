@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html data-ng-app="exampleApp" lang="pl">
+<head>
+	<meta charset="UTF-8">
+	<title>AngularJS DatePicker plugin</title>
+	<link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../node_modules/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="../dist/angularjs-bootstrap4-datepicker.css">
+	<!--suppress CssUnusedSymbol -->
+	<style type="text/css">
+		.page-header {
+			padding-top: 30px;
+			padding-bottom: 9px;
+			margin: 0 0 20px;
+			border-bottom: 1px solid #eee;
+		}
+		.form-control.ng-invalid-date {
+			border-color: #a94442;
+		}
+		a[ng-click] { cursor: pointer; }
+		.form-text {
+			margin-bottom: 0;
+		}
+	</style>
+</head>
+<body>
+<div class="container" data-ng-controller="exampleCtrl as vm">
+	<h4 class="page-header">Datepicker examples</h4>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Default datepicker
+				<a href="javascript:" ng-click="vm.isDisabled=!vm.isDisabled">Trigger 'disabled'</a>
+			</small>
+			<datepicker ng-model="date" ng-disabled="vm.isDisabled"></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				With min-date set to first datepicker value
+			</small>
+			<datepicker ng-model="date2" min-date="date"></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				With max-date set to second datepicker value
+			</small>
+			<datepicker ng-model="date3" max-date="date2"></datepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Invalid date
+			</small>
+			<datepicker ng-model="date4"></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				With 'form-control-sm' class
+			</small>
+			<datepicker ng-model="date" class="form-control-sm"></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Without icon
+			</small>
+			<datepicker ng-model="date" show-icon="false"></datepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Hide on pick
+			</small>
+			<datepicker ng-model="date" hide-on-pick></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Disabled dates callback
+			</small>
+			<datepicker ng-model="date" disabled-dates="disabledDates"></datepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Month picker
+			</small>
+			<datepicker ng-model="month" month-picker></datepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group">
+				<small class="form-text">
+					Custom input group
+				</small>
+				<div class="input-group flex-nowrap">
+					<span class="input-group-prepend"><button class="btn btn-outline-secondary">Custom</button></span>
+					<datepicker ng-model="date"></datepicker>
+					<div class="input-group-append">
+						<span class="input-group-text">Custom</span>
+					</div>
+				</div>
+			</div>
+			<div class="form-group">
+				<small class="form-text">
+					Custom format
+				</small>
+				<datepicker ng-model="dateFormat" format="j F Y"></datepicker>
+			</div>
+		</div>
+		<div class="form-group col-sm-6">
+			<small class="form-text">
+				Calendar only
+			</small>
+			<datepicker-calendar ng-model="date"></datepicker-calendar>
+		</div>
+	</div>
+	<h4 class="page-header">Timepicker examples</h4>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Default timepicker {{time}}
+			</small>
+			<timepicker ng-model="time"></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Without hours
+			</small>
+			<timepicker ng-model="time2" pick-hours="false"></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Only seconds
+			</small>
+			<timepicker ng-model="time3" pick-hours="false" pick-minutes="false"></timepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Only hours and minutes
+			</small>
+			<timepicker ng-model="time4" pick-seconds="false"></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				With 'form-control-sm' class
+			</small>
+			<timepicker ng-model="time" class="form-control-sm"></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Without icon
+			</small>
+			<timepicker ng-model="time" show-icon="false"></timepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Hide on pick
+			</small>
+			<timepicker ng-model="time" hide-on-pick></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Custom input group
+			</small>
+			<div class="input-group flex-nowrap">
+				<div class="input-group-prepend">
+					<button class="btn btn-outline-secondary">Custom</button>
+				</div>
+				<timepicker ng-model="time"></timepicker>
+				<div class="input-group-append">
+					<span class="input-group-text">Custom</span>
+				</div>
+			</div>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Picker only
+			</small>
+			<timepicker-drop ng-model="time"></timepicker-drop>
+		</div>
+	</div>
+</div>
+<script type="text/javascript" src="../node_modules/angular/angular.min.js"></script>
+<script type="text/javascript" src="../node_modules/date-extensions/dist/date-extended.js"></script>
+<script type="text/javascript" src="../dist/angularjs-bootstrap4-datepicker.js"></script>
+<script type="text/javascript" src="example.js"></script>
+</body>
+</html>

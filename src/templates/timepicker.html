@@ -1,0 +1,25 @@
+<!--
+  ~ Angular DatePicker & TimePicker plugin for AngularJS
+  ~ Copyright (c) 2016-2019 Rodziu <mateusz.rohde@gmail.com>
+  ~ License: MIT
+  -->
+<div class="dropdown"
+	 ng-class="{
+	 'input-group': tpCtrl.options.showIcon, 'input-group-sm': tpCtrl.isSmall, 'input-group-lg': tpCtrl.isLarge,
+	 'show': tpCtrl.isOpen}">
+	<input type="text" class="form-control" ng-model="tpCtrl.ngModel" ng-required="tpCtrl.isRequired"
+		   ng-click="tpCtrl.isOpen = true" readonly/>
+	<ul class="dropdown-menu dropdown-menu-right angular-timepicker" ng-click="$event.stopPropagation()"
+		ng-class="{'show': tpCtrl.isOpen}">
+		<li ng-if="tpCtrl.isOpen">
+			<timepicker-drop ng-model="tpCtrl.ngModel" pick-hours="tpCtrl.pickHours" pick-minutes="tpCtrl.pickMinutes"
+							 pick-seconds="tpCtrl.pickSeconds"></timepicker-drop>
+		</li>
+	</ul>
+	<span class="input-group-append" ng-show="::tpCtrl.options.showIcon">
+		<button type="button" class="btn btn-outline-secondary" data-ng-disabled="tpCtrl.isDisabled"
+				ng-click="tpCtrl.isOpen = true">
+			<i class="fa fa-clock-o"></i>
+		</button>
+	</span>
+</div>

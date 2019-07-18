@@ -1,0 +1,25 @@
+<!--
+  ~ Angular DatePicker & TimePicker plugin for AngularJS
+  ~ Copyright (c) 2016-2019 Rodziu <mateusz.rohde@gmail.com>
+  ~ License: MIT
+  -->
+<div class="dropdown"
+	 ng-class="{
+	 'input-group': dpCtrl.options.showIcon, 'input-group-sm': dpCtrl.isSmall, 'input-group-lg': dpCtrl.isLarge,
+	 'show': dpCtrl.isOpen}">
+	<input type="text" class="form-control" ng-model="dpCtrl.ngModel" datepicker-input
+		   ng-click="dpCtrl.isOpen = true"/>
+	<ul class="dropdown-menu dropdown-menu-right angular-datepicker" ng-click="$event.stopPropagation()"
+		ng-class="{'show': dpCtrl.isOpen}">
+		<li ng-if="dpCtrl.isOpen">
+			<datepicker-calendar ng-model="dpCtrl.ngModel" min-date="dpCtrl.minDate"
+								 max-date="dpCtrl.maxDate" disabled-dates="dpCtrl.disabledDates"></datepicker-calendar>
+		</li>
+	</ul>
+	<span class="input-group-append" ng-show="::dpCtrl.options.showIcon">
+		<button type="button" class="btn btn-outline-secondary" data-ng-disabled="dpCtrl.isDisabled"
+				ng-click="dpCtrl.isOpen = true">
+			<i class="fa fa-calendar"></i>
+		</button>
+	</span>
+</div>

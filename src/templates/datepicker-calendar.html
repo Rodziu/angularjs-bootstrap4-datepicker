@@ -1,0 +1,55 @@
+<!--
+  ~ Angular DatePicker & TimePicker plugin for AngularJS
+  ~ Copyright (c) 2016-2019 Rodziu <mateusz.rohde@gmail.com>
+  ~ License: MIT
+  -->
+<table class="table table-sm table-datepicker">
+	<thead>
+		<tr>
+			<th ng-click="ctrl.displayAction('prev')" ng-class="{'disabled': !ctrl.validDisplayAction('prev')}"><i
+					class="fa fa-chevron-left"></i></th>
+			<th ng-click="ctrl.changeMode(ctrl.displayMode === 'days' ? 'months' : 'years')"
+				colspan="{{ctrl.displayMode == 'days' ? 5 : 2}}"
+				ng-switch="ctrl.displayMode">
+				<span ng-switch-when="days">{{ctrl.currentDisplayDate.format('F Y')}}</span>
+				<span ng-switch-when="months">{{ctrl.currentDisplayDate.format('Y')}}</span>
+				<span ng-switch-when="years">
+					{{ctrl.displayData[0][0]}}
+					-
+					{{ctrl.displayData[2][3]}}
+				</span>
+			</th>
+			<th ng-click="ctrl.displayAction('next')" ng-class="{'disabled': !ctrl.validDisplayAction('next')}"><i
+					class="fa fa-chevron-right"></i></th>
+		</tr>
+		<tr ng-show="ctrl.displayMode == 'days'">
+			<th ng-repeat="d in ::ctrl.dayNames">{{d}}</th>
+		</tr>
+	</thead>
+	<tbody ng-switch="ctrl.displayMode">
+		<tr ng-switch-when="days" ng-repeat="row in ctrl.displayData">
+			<td ng-repeat="d in ::row" ng-click="ctrl.pickDate(d, 'day')"
+				ng-class="{
+				'old': d.format('Y-m') < ctrl.currentDisplayDate.format('Y-m'),
+				'fut': d.format('Y-m') > ctrl.currentDisplayDate.format('Y-m'),
+				'active': d.format('Ymd') == ctrl.currentDate.format('Ymd'),
+				'disabled': !ctrl.isEnabledDate(d, 'day')}">
+				{{::d.format('j')}}
+			</td>
+		</tr>
+		<tr ng-switch-when="months" ng-repeat="row in ::ctrl.monthNames" class="months">
+			<td ng-repeat="m in ::row"
+				ng-click="ctrl.pickDate(ctrl.currentDisplayDate.format('Y-' + m.number), 'month')"
+				ng-class="{'active': ctrl.currentDisplayDate.format('Y' + m.number) == ctrl.currentDate.format('Yn'),
+				'disabled': !ctrl.isEnabledDate(ctrl.currentDisplayDate.format('Y-' + m.number), 'month')}">
+				{{::m.name}}
+			</td>
+		</tr>
+		<tr ng-switch-when="years" ng-repeat="row in ctrl.displayData" class="years">
+			<td ng-repeat="y in ::row" ng-click="ctrl.pickDate(y, 'year')"
+				ng-class="{'active': y == ctrl.currentDate.getFullYear(), 'disabled': !ctrl.isEnabledDate(y + '', 'year')}">
+				{{::y}}
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,126 @@
+/*!
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2019 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+@import "../../node_modules/bootstrap/scss/functions";
+@import "../../node_modules/bootstrap/scss/variables";
+// variables
+$hover-bg: #eee;
+$dtp-color: #333;
+//
+.angular-datepicker {
+  padding: 4px;
+}
+
+datepicker.form-control-sm {
+  padding: 0 !important;
+}
+
+.input-group > datepicker > .input-group,
+.input-group > timepicker > .input-group{
+  > input, > .input-group-append, > .input-group-prepend,
+  > .input-group-append > button, > .input-group-prepend > button {
+    border-radius: 0;
+  }
+}
+
+.table-datepicker {
+  width: 240px; margin: 0;
+
+  > thead > tr {
+    > th {
+      text-align: center; border: 0; color: $dtp-color;
+    }
+
+    &:first-child > th {
+      cursor: pointer;
+
+      &:hover {
+        background: $hover-bg;
+      }
+    }
+  }
+
+  > tbody > tr {
+    td {
+      text-align: center; cursor: pointer; color: $dtp-color;
+      border: 0;
+
+      &:hover {
+        background: $hover-bg;
+      }
+
+      &.old, &.fut {
+        color: #777;
+      }
+
+      &.active {
+        color: #fff; background: $primary;
+        border-radius: 4px;
+      }
+    }
+
+    &.months > td, &.years > td {
+      line-height: 40px;
+    }
+  }
+
+  .disabled {
+    cursor: not-allowed !important;
+    color: #aaa !important;
+  }
+}
+
+//
+.angular-timepicker {
+  padding: 0;
+}
+
+timepicker.form-control-sm {
+  padding: 0 !important;
+}
+
+.input-group > timepicker > .input-group {
+  > input, > .input-group-addon, > .input-group-btn > * {
+    border-radius: 0;
+  }
+}
+
+.table-timepicker {
+  width: 240px; margin: 0;
+
+  > tbody > tr {
+    td {
+      text-align: center;
+      border: 0; padding: 5px;
+
+      > a {
+        cursor: pointer;
+        display: block; padding: 4px; text-decoration: none !important; outline: none !important;
+        color: $dtp-color !important;
+
+        &:hover {
+          background: $hover-bg;
+        }
+      }
+    }
+
+    &.timepicker-values > td {
+      > a {
+        padding: 15px 4px; position: relative; font-weight: bold;
+      }
+
+      & + td > a {
+        &:before {
+          content: ":"; display: block;
+          position: absolute; left: -8px;
+        }
+      }
+    }
+
+    &.hours > td {
+      padding: 0;
+    }
+  }
+}
