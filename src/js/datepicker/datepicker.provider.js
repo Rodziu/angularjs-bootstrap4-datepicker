@@ -21,6 +21,7 @@
 			updateDateTranslations: () => {
 				this.options.dayNames = DateExtended.getDayShortNames();
 				this.options.dayNames.push(this.options.dayNames.shift());
+				this.options.monthNames = [];
 				for(let i = 0; i < 3; i++){
 					let row = [];
 					for(let j = 0; j < 4; j++){
