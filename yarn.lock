@@ -107,7 +107,7 @@ amdefine@>=0.0.4:
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
   integrity sha1-SlKCrBZHKek2Gbz9OtFR+BfOkfU=
 
-angular@^1.7.4:
+angular@^1.7.8:
   version "1.7.8"
   resolved "https://registry.yarnpkg.com/angular/-/angular-1.7.8.tgz#b77ede272ce1b261e3be30c1451a0b346905a3c9"
   integrity sha512-wtef/y4COxM7ZVhddd7JtAAhyYObq9YXKar9tsW7558BImeVYteJiTxCKeJOL45lJ/+7B4wrAC49j8gTFYEthg==
@@ -1026,10 +1026,10 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-extensions@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/date-extensions/-/date-extensions-2.0.0.tgz#380b74081cad63b336a32fb70276eb4c3ea9c5c3"
-  integrity sha512-q4Jq8Oc5bP7TvMV8zC9EPfZJTF2d78dBU1g6m0TbS4tEKZNCUPzoJamugBYI7sEz3m0LP6C/MGGEQsCxjBPb+Q==
+date-extensions@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/date-extensions/-/date-extensions-2.0.1.tgz#f064265fe4e94425819a6edf8992484960621e4e"
+  integrity sha512-Ma2P+3lEWJ+GXEiSyz7xZQjk5qsD1YznppZaEqbmq6lEPcHl4SR2mjROX4j2aRr+xogDW0mtBo4NNShFElHkYw==
 
 date-format@^2.0.0:
   version "2.1.0"
