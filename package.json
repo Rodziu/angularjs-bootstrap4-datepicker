@@ -23,6 +23,7 @@
     "eslint": "^5.16.0",
     "eslint-config-angular": "^0.5.0",
     "eslint-plugin-angular": "^4.0.0",
+    "eslint-utils": "^1.4.1",
     "gulp": "^4.0.0",
     "gulp-angular-templatecache": "^2.2.2",
     "gulp-append-prepend": "^1.0.8",
