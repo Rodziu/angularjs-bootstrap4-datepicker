@@ -25,43 +25,38 @@
             });
           })(inputAttributes[i]);
         }
-        ngModel.$formatters.push((value) => {
-          if (angular.isString(value)) {
-            const format = 'format' in datepicker.$attrs ?
-                datepicker.$attrs['format'] :
-                datePicker.format;
-              let date = DateExtended.createFromFormat(format, value);
-            if (!date.isValid()) {
-              // check if ngModel is a value in a different format
-              // if so - try to convert it to desired format
-              date = (new DateExtended(value));
+        const format = 'format' in datepicker.$attrs ?
+            datepicker.$attrs['format'] :
+            datePicker.format,
+            modelFormat = 'modelFormat' in datepicker.$attrs ?
+                datepicker.$attrs['modelFormat'] :
+                datePicker.modelFormat;
+        ngModel.$parsers.push(_dateParser(format, modelFormat));
+        ngModel.$formatters.push(_dateParser(modelFormat, format));
+
+        //////
+
+        function _dateParser(myFormat, toFormat) {
+          return (value) => {
+            let isValid = true;
+            if (
+                angular.isString(value)
+                && angular.isDefined(datepicker.isEnabledDate)
+                && value !== ''
+            ) {
+              let date = DateExtended.createFromFormat(myFormat, value);
               if (date.isValid()) {
-                value = date.format(format);
-                ngModel.$modelValue = value;
+                value = date.format(toFormat);
+                isValid = datepicker.isEnabledDate(date, 'day');
+              } else {
+                isValid = false;
               }
             }
-          }
-          return value;
-        });
-
-        ngModel.$validators.date = (value) => {
-          let isValid = true;
-          if (
-              angular.isDefined(datepicker.isEnabledDate)
-              && angular.isDefined(value)
-              && value !== ''
-          ) {
-            let date = DateExtended.createFromFormat(
-                'format' in datepicker.$attrs ?
-                    datepicker.$attrs['format'] :
-                    datePicker.format, value
-            );
-            isValid = date.isValid() && datepicker.isEnabledDate(date, 'day');
-          }
-          element[0].setCustomValidity(isValid ? '' : ' ');
-          return isValid;
-        };
-      },
+            element[0].setCustomValidity(isValid ? '' : ' ');
+            return value;
+          };
+        }
+      }
     };
   }
 

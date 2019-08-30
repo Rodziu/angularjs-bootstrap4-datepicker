@@ -15,6 +15,7 @@
 			dayNames: [],
 			monthNames: [],
 			format: 'Y-m-d',
+      modelFormat: 'Y-m-d',
 			/**
 			 * Call this whenever you change default locale in DateExtended
 			 */

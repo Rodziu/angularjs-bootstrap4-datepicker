@@ -9,7 +9,8 @@ app.controller('exampleCtrl', ['$scope', function($scope){
 	$scope.date2 = (new DateExtended()).format('Y-m-d');
 	$scope.date3 = (new DateExtended()).format('Y-m-d');
 	$scope.date4 = 'not a date';
-	$scope.dateFormat = (new DateExtended()).add(1).format('Y-m-d');
+  $scope.dateFormat = (new DateExtended()).add(1).format('Y-m-d');
+  $scope.dateFormatModel = (new DateExtended()).add(1).format('j F Y');
 
 	$scope.disabledDates = function(date, mode){
 		if(mode === 'day'){

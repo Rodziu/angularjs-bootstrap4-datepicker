@@ -150,7 +150,7 @@ angular.module('datePicker.timePicker', []);
       }
       switch (mode) {
         case 'day':
-          ctrl.ngModel = date.format(ctrl.format);
+          ctrl.ngModel = date.format(ctrl.modelFormat);
           ctrl.currentDate = date;
           ctrl.currentDisplayDate = date;
           ctrl.buildCalendar();
@@ -189,6 +189,12 @@ angular.module('datePicker.timePicker', []);
                   ? ctrl.datepicker.$attrs['format']
                   : datePicker['format']
           );
+      ctrl.modelFormat = 'modelFormat' in $attrs
+          ? $attrs['modelFormat']
+          : (ctrl.datepicker !== null && 'modelFormat' in ctrl.datepicker.$attrs
+                  ? ctrl.datepicker.$attrs['modelFormat']
+                  : datePicker['modelFormat']
+          );
       ctrl.$doCheck();
       if (angular.isUndefined(ctrl.minDate)) {
         ctrl.minDate = datePicker.minDate;
@@ -214,7 +220,7 @@ angular.module('datePicker.timePicker', []);
         }else if (ctrl.ngModel instanceof Date) {
           newDate = DateExtended.createFromDate(ctrl.ngModel);
         }else {
-          newDate = DateExtended.createFromFormat(ctrl.format, ctrl.ngModel);
+          newDate = DateExtended.createFromFormat(ctrl.modelFormat, ctrl.ngModel);
           if(!newDate.isValid()){
             newDate = new DateExtended(ctrl.ngModel);
           }
@@ -298,43 +304,38 @@ angular.module('datePicker.timePicker', []);
             });
           })(inputAttributes[i]);
         }
-        ngModel.$formatters.push((value) => {
-          if (angular.isString(value)) {
-            const format = 'format' in datepicker.$attrs ?
-                datepicker.$attrs['format'] :
-                datePicker.format;
-              let date = DateExtended.createFromFormat(format, value);
-            if (!date.isValid()) {
-              // check if ngModel is a value in a different format
-              // if so - try to convert it to desired format
-              date = (new DateExtended(value));
+        const format = 'format' in datepicker.$attrs ?
+            datepicker.$attrs['format'] :
+            datePicker.format,
+            modelFormat = 'modelFormat' in datepicker.$attrs ?
+                datepicker.$attrs['modelFormat'] :
+                datePicker.modelFormat;
+        ngModel.$parsers.push(_dateParser(format, modelFormat));
+        ngModel.$formatters.push(_dateParser(modelFormat, format));
+
+        //////
+
+        function _dateParser(myFormat, toFormat) {
+          return (value) => {
+            let isValid = true;
+            if (
+                angular.isString(value)
+                && angular.isDefined(datepicker.isEnabledDate)
+                && value !== ''
+            ) {
+              let date = DateExtended.createFromFormat(myFormat, value);
               if (date.isValid()) {
-                value = date.format(format);
-                ngModel.$modelValue = value;
+                value = date.format(toFormat);
+                isValid = datepicker.isEnabledDate(date, 'day');
+              } else {
+                isValid = false;
               }
             }
-          }
-          return value;
-        });
-
-        ngModel.$validators.date = (value) => {
-          let isValid = true;
-          if (
-              angular.isDefined(datepicker.isEnabledDate)
-              && angular.isDefined(value)
-              && value !== ''
-          ) {
-            let date = DateExtended.createFromFormat(
-                'format' in datepicker.$attrs ?
-                    datepicker.$attrs['format'] :
-                    datePicker.format, value
-            );
-            isValid = date.isValid() && datepicker.isEnabledDate(date, 'day');
-          }
-          element[0].setCustomValidity(isValid ? '' : ' ');
-          return isValid;
-        };
-      },
+            element[0].setCustomValidity(isValid ? '' : ' ');
+            return value;
+          };
+        }
+      }
     };
   }
 
@@ -394,7 +395,7 @@ angular.module('datePicker.timePicker', []);
 		/**
 		 */
 		ctrl.$onChanges = function(){
-			ctrl.isSmall = $element.hasClass('form-control-sm');
+      ctrl.isSmall = $element.hasClass('form-control-sm');
 			ctrl.isLarge = $element.hasClass('form-control-lg');
 		};
 		/**
@@ -454,6 +455,7 @@ angular.module('datePicker.timePicker', []);
 			dayNames: [],
 			monthNames: [],
 			format: 'Y-m-d',
+      modelFormat: 'Y-m-d',
 			/**
 			 * Call this whenever you change default locale in DateExtended
 			 */

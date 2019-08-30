@@ -49,7 +49,7 @@
 		/**
 		 */
 		ctrl.$onChanges = function(){
-			ctrl.isSmall = $element.hasClass('form-control-sm');
+      ctrl.isSmall = $element.hasClass('form-control-sm');
 			ctrl.isLarge = $element.hasClass('form-control-lg');
 		};
 		/**

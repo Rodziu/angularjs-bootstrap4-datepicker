@@ -128,7 +128,7 @@
       }
       switch (mode) {
         case 'day':
-          ctrl.ngModel = date.format(ctrl.format);
+          ctrl.ngModel = date.format(ctrl.modelFormat);
           ctrl.currentDate = date;
           ctrl.currentDisplayDate = date;
           ctrl.buildCalendar();
@@ -167,6 +167,12 @@
                   ? ctrl.datepicker.$attrs['format']
                   : datePicker['format']
           );
+      ctrl.modelFormat = 'modelFormat' in $attrs
+          ? $attrs['modelFormat']
+          : (ctrl.datepicker !== null && 'modelFormat' in ctrl.datepicker.$attrs
+                  ? ctrl.datepicker.$attrs['modelFormat']
+                  : datePicker['modelFormat']
+          );
       ctrl.$doCheck();
       if (angular.isUndefined(ctrl.minDate)) {
         ctrl.minDate = datePicker.minDate;
@@ -192,7 +198,7 @@
         }else if (ctrl.ngModel instanceof Date) {
           newDate = DateExtended.createFromDate(ctrl.ngModel);
         }else {
-          newDate = DateExtended.createFromFormat(ctrl.format, ctrl.ngModel);
+          newDate = DateExtended.createFromFormat(ctrl.modelFormat, ctrl.ngModel);
           if(!newDate.isValid()){
             newDate = new DateExtended(ctrl.ngModel);
           }
