@@ -18,10 +18,13 @@
         for (let i = 0; i < inputAttributes.length; i++) {
           (function(attribute) {
             datepicker.$attrs.$observe(attribute, function(value) {
-              element.attr(attribute, value);
               if (attribute === 'disabled') {
                 datepicker.isDisabled = value;
+              } else if (attribute === 'required') {
+                datepicker.isRequired = value;
+                return;
               }
+              element.attr(attribute, value);
             });
           })(inputAttributes[i]);
         }
