@@ -150,7 +150,7 @@ angular.module('datePicker.timePicker', []);
       }
       switch (mode) {
         case 'day':
-          ctrl.ngModel = date.format(ctrl.modelFormat);
+          ctrl.ngModelCtrl.$setViewValue(date.format(ctrl.modelFormat));
           ctrl.currentDate = date;
           ctrl.currentDisplayDate = date;
           ctrl.buildCalendar();
@@ -270,6 +270,7 @@ angular.module('datePicker.timePicker', []);
      * @property {{}} datepicker
      */
     require: {
+      ngModelCtrl: 'ngModel',
       datepicker: '?^datepicker',
     },
     controller: datePickerCalendarController,
@@ -354,8 +355,8 @@ angular.module('datePicker.timePicker', []);
 !function(){
 	'use strict';
 
-	datePickerController.$inject = ["$document", "$scope", "$element", "$attrs", "datePicker", "datePickerService"];
-	function datePickerController($document, $scope, $element, $attrs, datePicker, datePickerService){
+	datePickerController.$inject = ["$document", "$scope", "$element", "$attrs", "$parse", "datePicker", "datePickerService"];
+	function datePickerController($document, $scope, $element, $attrs, $parse, datePicker, datePickerService){
 		let ctrl = this,
 			onClick = function(e){
 				if(ctrl.isOpen && !$element[0].contains(e.target)){
@@ -394,6 +395,14 @@ angular.module('datePicker.timePicker', []);
 			ctrl.isEnabledDate = function(date, mode){
 				return datePickerService.isEnabledDate(ctrl, date, mode);
 			};
+      if (angular.isFunction(ctrl.ngChange)) {
+        const originalChange = ctrl.ngChange,
+            getter = $parse($attrs['ngModel']);
+        ctrl.ngChange = function() {
+          getter.assign($scope.$parent, ctrl.ngModel);
+          originalChange();
+        };
+      }
 		};
 		/**
 		 */

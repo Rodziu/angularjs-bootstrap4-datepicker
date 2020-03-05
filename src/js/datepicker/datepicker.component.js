@@ -6,7 +6,7 @@
 !function(){
 	'use strict';
 
-	function datePickerController($document, $scope, $element, $attrs, datePicker, datePickerService){
+	function datePickerController($document, $scope, $element, $attrs, $parse, datePicker, datePickerService){
 		let ctrl = this,
 			onClick = function(e){
 				if(ctrl.isOpen && !$element[0].contains(e.target)){
@@ -45,6 +45,14 @@
 			ctrl.isEnabledDate = function(date, mode){
 				return datePickerService.isEnabledDate(ctrl, date, mode);
 			};
+      if (angular.isFunction(ctrl.ngChange)) {
+        const originalChange = ctrl.ngChange,
+            getter = $parse($attrs['ngModel']);
+        ctrl.ngChange = function() {
+          getter.assign($scope.$parent, ctrl.ngModel);
+          originalChange();
+        };
+      }
 		};
 		/**
 		 */

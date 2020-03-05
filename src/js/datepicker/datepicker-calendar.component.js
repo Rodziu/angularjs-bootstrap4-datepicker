@@ -128,7 +128,7 @@
       }
       switch (mode) {
         case 'day':
-          ctrl.ngModel = date.format(ctrl.modelFormat);
+          ctrl.ngModelCtrl.$setViewValue(date.format(ctrl.modelFormat));
           ctrl.currentDate = date;
           ctrl.currentDisplayDate = date;
           ctrl.buildCalendar();
@@ -248,6 +248,7 @@
      * @property {{}} datepicker
      */
     require: {
+      ngModelCtrl: 'ngModel',
       datepicker: '?^datepicker',
     },
     controller: datePickerCalendarController,
