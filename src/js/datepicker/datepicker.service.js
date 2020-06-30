@@ -50,7 +50,7 @@
 					};
 				const ret = compare('min') && compare('max');
 				if(ret && angular.isFunction(ctrl.disabledDates)){
-					return ctrl.disabledDates(date, mode);
+          return ctrl.disabledDates({date, mode});
 				}
 				return ret;
 			}

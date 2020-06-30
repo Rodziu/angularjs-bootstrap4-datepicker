@@ -88,7 +88,7 @@
 			ngModel: '=',
 			minDate: '<?',
 			maxDate: '<?',
-			disabledDates: '<?',
+			disabledDates: '&?',
 			ngChange: '&?'
 		},
 		templateUrl: 'src/templates/datepicker.html',

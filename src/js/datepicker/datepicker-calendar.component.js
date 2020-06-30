@@ -161,6 +161,9 @@
     /**
      */
     ctrl.$onInit = function() {
+      if (angular.isObject(ctrl.datepicker) && angular.isFunction(ctrl.datepicker.disabledDates)) {
+        ctrl.disabledDates = ctrl.datepicker.disabledDates;
+      }
       ctrl.format = 'format' in $attrs
           ? $attrs['format']
           : (ctrl.datepicker !== null && 'format' in ctrl.datepicker.$attrs
@@ -239,7 +242,7 @@
       ngModel: '=',
       minDate: '<?',
       maxDate: '<?',
-      disabledDates: '<?',
+      disabledDates: '&?',
     },
     templateUrl: 'src/templates/datepicker-calendar.html',
     controllerAs: 'ctrl',
