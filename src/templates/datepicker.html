@@ -8,6 +8,7 @@
 	 'input-group': dpCtrl.options.showIcon, 'input-group-sm': dpCtrl.isSmall, 'input-group-lg': dpCtrl.isLarge,
 	 'show': dpCtrl.isOpen}">
 	<input type="text" class="form-control" ng-model="dpCtrl.ngModel" datepicker-input
+		   ng-attr-placeholder="{{dpCtrl.placeholder}}"
 		   ng-click="dpCtrl.isOpen = true" ng-required="dpCtrl.isRequired"/>
 	<ul class="dropdown-menu dropdown-menu-right angular-datepicker" ng-click="$event.stopPropagation()"
 		ng-class="{'show': dpCtrl.isOpen}">

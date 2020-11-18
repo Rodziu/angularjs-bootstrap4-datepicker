@@ -8,19 +8,19 @@
 	<link rel="stylesheet" href="../dist/angularjs-bootstrap4-datepicker.css">
 	<!--suppress CssUnusedSymbol -->
 	<style type="text/css">
-		.page-header {
-			padding-top: 30px;
-			padding-bottom: 9px;
-			margin: 0 0 20px;
-			border-bottom: 1px solid #eee;
-		}
-		.form-control.ng-invalid-date {
-			border-color: #a94442;
-		}
-		a[ng-click] { cursor: pointer; }
-		.form-text {
-			margin-bottom: 0;
-		}
+        .page-header {
+            padding-top: 30px;
+            padding-bottom: 9px;
+            margin: 0 0 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .form-control.ng-invalid-date {
+            border-color: #a94442;
+        }
+        a[ng-click] { cursor: pointer; }
+        .form-text {
+            margin-bottom: 0;
+        }
 	</style>
 </head>
 <body>
@@ -85,6 +85,14 @@
 				Month picker
 			</small>
 			<datepicker ng-model="month" month-picker></datepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Placeholder
+			</small>
+			<datepicker ng-model="placeholder" placeholder="Placeholder text"></datepicker>
 		</div>
 	</div>
 	<div class="row">
@@ -185,6 +193,14 @@
 				</div>
 			</div>
 		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Placeholder
+			</small>
+			<timepicker ng-model="timePlaceholder" placeholder="Placeholder text"></timepicker>
+		</div>
+	</div>
+	<div class="row">
 		<div class="form-group col-sm-4">
 			<small class="form-text">
 				Picker only

@@ -8,6 +8,7 @@
 	 'input-group': tpCtrl.options.showIcon, 'input-group-sm': tpCtrl.isSmall, 'input-group-lg': tpCtrl.isLarge,
 	 'show': tpCtrl.isOpen}">
 	<input type="text" class="form-control" ng-model="tpCtrl.ngModel" ng-required="tpCtrl.isRequired"
+		   ng-attr-placeholder="{{tpCtrl.placeholder}}"
 		   ng-click="tpCtrl.isOpen = true" readonly/>
 	<ul class="dropdown-menu dropdown-menu-right angular-timepicker" ng-click="$event.stopPropagation()"
 		ng-class="{'show': tpCtrl.isOpen}">

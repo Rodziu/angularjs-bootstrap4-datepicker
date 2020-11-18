@@ -72,7 +72,8 @@
 			pickHours: '<?',
 			pickMinutes: '<?',
 			pickSeconds: '<?',
-			ngChange: '&?'
+			ngChange: '&?',
+      placeholder: '@?'
 		},
 		templateUrl: 'src/templates/timepicker.html',
 		/**
