@@ -1,16 +1,22 @@
 /*
  * Angular DatePicker & TimePicker plugin for AngularJS
- * Copyright (c) 2016-2019 Rodziu <mateusz.rohde@gmail.com>
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
  * License: MIT
  */
 
 !function(){
 	'use strict';
-	const pkg = require('./package'),
-		gulp = require('gulp'),
-		concat = require('gulp-concat'),
+	const gulp = require('gulp'),
 		rename = require('gulp-rename'),
-		sourcemaps = require('gulp-sourcemaps');
+		ts = require('gulp-typescript'),
+		sourcemaps = require('gulp-sourcemaps'),
+		eslint = require('gulp-eslint'),
+		ngAnnotate = require('@rodziu/gulp-ng-annotate-patched'),
+		plumber = require('gulp-plumber'),
+		log = require('fancy-log'),
+		merge = require('merge2'),
+		webpack = require('webpack'),
+		webpackStream = require('webpack-stream');
 
 	// templates
 	const minifyHTML = require('gulp-minify-html'),
@@ -23,36 +29,83 @@
 				module: 'datePicker',
 				root: 'src/templates'
 			}))
-			.pipe(gulp.dest('dist'));
+			.pipe(gulp.dest('.build'));
 	});
-	// js
-	const ngAnnotate = require('@rodziu/gulp-ng-annotate-patched'),
-		uglify = require('gulp-uglify-es').default,
-		eslint = require('gulp-eslint'),
-		gap = require('gulp-append-prepend');
+	// ts
+	gulp.task('ts', () => {
+		const tsProject = ts.createProject('tsconfig.json'),
+			tsResult = gulp.src([
+				'src/ts/**/*.ts',
+			])
+				.pipe(eslint())
+				.pipe(eslint.format())
+				.pipe(eslint.failOnError())
+				.pipe(sourcemaps.init())
+				.pipe(tsProject());
 
-	gulp.task('js', gulp.series('templates', function(){
-		return gulp.src([
-			'src/js/**/*.module.js',
-			'src/js/**/*.js'
-		])
-			.pipe(ngAnnotate())
-			.pipe(sourcemaps.init())
-			.pipe(concat(pkg.name + '.js'))
-			.pipe(eslint())
-			.pipe(eslint.format())
-			.pipe(eslint.failOnError())
-			.pipe(gap.appendFile('dist/templates.js'))
-			.pipe(gulp.dest('dist'))
-			.pipe(rename(pkg.name + '.min.js'))
-			.pipe(uglify())
-			.pipe(sourcemaps.write('./', {includeContent: false}))
-			.pipe(gulp.dest('dist'))
-			.on('end', function(){
-				require('fs').unlinkSync('dist/templates.js');
-				return this;
-			});
-	}));
+		return merge([
+			tsResult.dts.pipe(gulp.dest('dist')),
+			tsResult.js
+				.pipe(plumber())
+				.pipe(ngAnnotate().on('error', (e) => {
+					log('\x1b[31mngAnnotate\x1b[0m ', e.message);
+				}))
+				.pipe(plumber.stop())
+				.pipe(sourcemaps.write())
+				.pipe(gulp.dest('.build'))
+		]);
+	});
+
+	gulp.task('bundle', () => {
+		return _bundle(false);
+	});
+
+	gulp.task('bundle:prod', () => {
+		return _bundle(true);
+	});
+
+	function _bundle(production) {
+		return gulp.src('dummy', {allowEmpty: true})
+			.pipe(webpackStream({
+				entry: {
+					'angularjs-bootstrap4-datepicker': [
+						'./.build/angularjs-bootstrap4-datepicker.js',
+						'./.build/templates.js'
+					]
+				},
+				mode: production ? 'production' : 'development',
+				externals: {
+					angular: 'angular'
+				},
+				output: {
+					devtoolNamespace: 'datePicker',
+					filename: (pathData) => {
+						let name = pathData.chunk.name;
+						return name.substring(0, 1).toLowerCase()
+							+ name.substring(1).replace(/[A-Z]/g, (letter) => {
+								return '-' + letter.toLowerCase();
+							})
+							+ (production ? '.min' : '') + '.js'
+					},
+					library: '[name]',
+					libraryTarget: 'umd',
+					libraryExport: 'default',
+					umdNamedDefine: true,
+					globalObject: 'window'
+				},
+				module: {
+					rules: [
+						{
+							test: /\.js$/,
+							enforce: 'pre',
+							use: ['source-map-loader'],
+						},
+					],
+				},
+				devtool: 'source-map'
+			}, webpack))
+			.pipe(gulp.dest('dist'));
+	}
 
 	// css
 	const cssMin = require('gulp-clean-css'),
@@ -69,6 +122,14 @@
 			.pipe(gulp.dest('dist'));
 	});
 
-	//
-	exports.default = gulp.series('js', 'scss');
+	gulp.task('watch', function() {
+		[
+			['src/**/*.ts', 'ts'],
+			['src/**/.scss', 'scss']
+		].forEach(([src, task]) => {
+			gulp.watch(src, {}, gulp.series(task, 'templates', 'bundle', 'bundle:prod'));
+		});
+	});
+
+	exports.default = gulp.series('ts', 'templates', 'scss', 'bundle', 'bundle:prod');
 }();

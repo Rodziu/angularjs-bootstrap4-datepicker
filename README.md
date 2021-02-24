@@ -5,7 +5,7 @@
 ## Prerequisites
 
 - AngularJS,
-- [date-extensions](https://yarnpkg.com/en/package/date-extensions) ^2.0,
+- [date-extensions](https://yarnpkg.com/en/package/date-extensions) ^3.0,
 - Bootstrap ^4.3,
 - Font Awesome ^4.7.
 
