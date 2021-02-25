@@ -5,16 +5,16 @@ export interface IMonthName {
 export interface IDatePickerOptions {
     minDate?: string | Date;
     maxDate?: string | Date;
-    showIcon?: boolean;
-    hideOnPick?: boolean;
-    dayNames?: string[];
-    monthNames?: IMonthName[][];
-    format?: string;
-    modelFormat?: string;
+    showIcon: boolean;
+    hideOnPick: boolean;
+    dayNames: string[];
+    monthNames: IMonthName[][];
+    format: string;
+    modelFormat: string;
     /**
      * Call this whenever you change default locale in DateExtended
      */
-    updateDateTranslations?: () => void;
+    updateDateTranslations: () => void;
 }
 export declare class DatePickerProvider {
     options: IDatePickerOptions;

@@ -20,7 +20,7 @@ export declare class DatePickerController implements IController {
     private readonly _onClick;
     ngChange: () => void;
     disabledDates?: disabledDatesFn;
-    options: IDatePickerOptions;
+    options: IDatePickerOptions | Record<string, never>;
     constructor($document: IDocumentService, $scope: IScope, $element: JQLite, $attrs: IAttributes, $parse: IParseService, datePicker: IDatePickerOptions, datePickerService: DatePickerService);
     $onInit(): void;
     $onChanges(): void;

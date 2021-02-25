@@ -616,6 +616,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
 /* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _datepicker_datepicker_module__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datepicker/datepicker.module */ "./.build/lib/datepicker/datepicker.module.js");
+/* harmony import */ var _timepicker_timepicker_module__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./timepicker/timepicker.module */ "./.build/lib/timepicker/timepicker.module.js");
 /*
  * Angular DatePicker & TimePicker plugin for AngularJS
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
@@ -623,8 +624,406 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 
-const datepickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker', [_datepicker_datepicker_module__WEBPACK_IMPORTED_MODULE_1__.datePickerDatePicker, 'datePicker.timePicker']);
+
+const datepickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker', [_datepicker_datepicker_module__WEBPACK_IMPORTED_MODULE_1__.datePickerDatePicker, _timepicker_timepicker_module__WEBPACK_IMPORTED_MODULE_2__.datePickerTimePicker]);
 const datePicker = datepickerModule.name;
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/timepicker/date-pad.filter.js":
+/*!**************************************************!*\
+  !*** ./.build/lib/timepicker/date-pad.filter.js ***!
+  \**************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "datePadFilter": () => (/* binding */ datePadFilter)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+
+function datePadFilter() {
+    return function (input) {
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isNumber(input)) {
+            return input < 10 ? '0' + input : input;
+        }
+        return input;
+    };
+}
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/timepicker/timepicker-drop.component.js":
+/*!************************************************************!*\
+  !*** ./.build/lib/timepicker/timepicker-drop.component.js ***!
+  \************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TimePickerDropComponentController": () => (/* binding */ TimePickerDropComponentController),
+/* harmony export */   "timePickerDropComponent": () => (/* binding */ timePickerDropComponent)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+
+/**
+ * @ngInject
+ */
+class TimePickerDropComponentController {
+    constructor($timeout, timePicker) {
+        this.mode = 'picker';
+        this.hours = 0;
+        this.minutes = 0;
+        this.seconds = 0;
+        this.$timeout = $timeout;
+        this.timePicker = timePicker;
+        this.hoursArray = this.timePicker.hours;
+        this.minutesArray = this.timePicker.minutes;
+    }
+    $onInit() {
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isUndefined(this.pickHours)) {
+            this.pickHours = this.timePicker.pickHours;
+        }
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isUndefined(this.pickMinutes)) {
+            this.pickMinutes = this.timePicker.pickMinutes;
+        }
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isUndefined(this.pickSeconds)) {
+            this.pickSeconds = this.timePicker.pickSeconds;
+        }
+        this.parseFromNgModel();
+    }
+    $doCheck() {
+        if (!angular__WEBPACK_IMPORTED_MODULE_0__.equals(this.ngModel, this._ngModel)) {
+            this._ngModel = this.ngModel;
+            this.parseFromNgModel();
+        }
+    }
+    parseFromNgModel() {
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isString(this.ngModel)) {
+            this.hours = 0;
+            this.minutes = 0;
+            this.seconds = 0;
+        }
+        try {
+            let h = 0, m = 0, s = 0, hasM = false;
+            this.ngModel.split(':').some((value, idx) => {
+                switch (idx) {
+                    case 0:
+                        if (this.pickHours) {
+                            h = parseInt(value);
+                        }
+                        else if (this.pickMinutes) {
+                            m = parseInt(value);
+                            hasM = true;
+                        }
+                        else if (this.pickSeconds) {
+                            s = parseInt(value);
+                            return true;
+                        }
+                        break;
+                    case 1:
+                        if (this.pickMinutes && !hasM) {
+                            m = parseInt(value);
+                        }
+                        else if (this.pickSeconds) {
+                            s = parseInt(value);
+                            return true;
+                        }
+                        break;
+                    case 2:
+                        if (this.pickSeconds) {
+                            s = parseInt(value);
+                        }
+                        return true;
+                }
+            });
+            if (!isNaN(h) && !isNaN(m) && !isNaN(s)) {
+                this.hours = h;
+                this.minutes = m;
+                this.seconds = s;
+            }
+        }
+        catch (e) {
+            //
+        }
+    }
+    setMode(mode) {
+        this.mode = mode;
+    }
+    change(mode, increment) {
+        const limit = mode === 'hours' ? 23 : 59;
+        if (increment) {
+            this[mode]++;
+        }
+        else {
+            this[mode]--;
+        }
+        if (this[mode] > limit) {
+            this[mode] = 0;
+        }
+        else if (this[mode] < 0) {
+            this[mode] = limit;
+        }
+        this.updateModel();
+    }
+    updateModel() {
+        const val = [];
+        if (this.pickHours) {
+            val.push(this.hours < 10 ? '0' + this.hours : this.hours);
+        }
+        if (this.pickMinutes) {
+            val.push(this.minutes < 10 ? '0' + this.minutes : this.minutes);
+        }
+        if (this.pickSeconds) {
+            val.push(this.seconds < 10 ? '0' + this.seconds : this.seconds);
+        }
+        this.ngModel = val.join(':');
+        if (this.timepicker !== null) {
+            if (angular__WEBPACK_IMPORTED_MODULE_0__.isFunction(this.timepicker.ngChange)) {
+                this.timepicker.ngChange();
+            }
+        }
+    }
+    pick(mode, value) {
+        this[mode] = parseInt(value);
+        this.mode = 'picker';
+        this.updateModel();
+        if (this.timepicker !== null && this.timepicker.options.hideOnPick !== false) {
+            this.$timeout(() => {
+                this.timepicker.isOpen = false;
+            });
+        }
+    }
+}
+TimePickerDropComponentController.$inject = ["$timeout", "timePicker"];
+const timePickerDropComponent = {
+    bindings: {
+        ngModel: '=',
+        pickHours: '<?',
+        pickMinutes: '<?',
+        pickSeconds: '<?'
+    },
+    templateUrl: 'src/templates/timepicker-drop.html',
+    controllerAs: 'ctrl',
+    /**
+     * @property ngChange
+     * @property {{}} timepicker
+     */
+    require: {
+        timepicker: '?^timepicker'
+    },
+    controller: TimePickerDropComponentController
+};
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/timepicker/timepicker.component.js":
+/*!*******************************************************!*\
+  !*** ./.build/lib/timepicker/timepicker.component.js ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TimePickerComponentController": () => (/* binding */ TimePickerComponentController),
+/* harmony export */   "timepickerComponent": () => (/* binding */ timepickerComponent)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+
+/**
+ * @ngInject
+ */
+class TimePickerComponentController {
+    constructor($document, $scope, $element, $attrs, timePicker) {
+        this.options = {};
+        this.$document = $document;
+        this.$scope = $scope;
+        this.$element = $element;
+        this.$attrs = $attrs;
+        this.timePicker = timePicker;
+    }
+    $onInit() {
+        angular__WEBPACK_IMPORTED_MODULE_0__.forEach(this.timePicker, (v, d) => {
+            if (angular__WEBPACK_IMPORTED_MODULE_0__.isDefined(this.$attrs[d])) {
+                if (this.$attrs[d] === 'false') {
+                    this.$attrs[d] = false;
+                }
+                else if (this.$attrs[d] === 'true') {
+                    this.$attrs[d] = true;
+                }
+                this.options[d] = this.$attrs[d];
+            }
+            else {
+                this.options[d] = v;
+            }
+        });
+        this.isOpen = false;
+        this.$attrs.$observe('required', (value) => {
+            this.isRequired = !!value;
+        });
+        this._onClick = (e) => {
+            if (this.isOpen && !this.$element[0].contains(e.target)) {
+                this.isOpen = false;
+                this.$scope.$digest();
+            }
+        };
+        this.$document.on('click', this._onClick);
+    }
+    $onChanges() {
+        this.isSmall = this.$element.hasClass('form-control-sm');
+        this.isLarge = this.$element.hasClass('form-control-lg');
+    }
+    $onDestroy() {
+        this.$document.off('click', this._onClick);
+    }
+}
+TimePickerComponentController.$inject = ["$document", "$scope", "$element", "$attrs", "timePicker"];
+/**
+ * @ngdoc component
+ * @name timepicker
+ *
+ * @param {expression} ngModel
+ * @param {boolean} pickHours
+ * @param {boolean} pickMinutes
+ * @param {boolean} pickSeconds
+ * @param {function} ngChange
+ * @param {boolean} showIcon
+ * @param {boolean} hideOnPick
+ */
+const timepickerComponent = {
+    bindings: {
+        ngModel: '=',
+        pickHours: '<?',
+        pickMinutes: '<?',
+        pickSeconds: '<?',
+        ngChange: '&?',
+        placeholder: '@?'
+    },
+    templateUrl: 'src/templates/timepicker.html',
+    /**
+     * @property tpCtrl
+     */
+    controllerAs: 'tpCtrl',
+    controller: TimePickerComponentController
+};
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/timepicker/timepicker.module.js":
+/*!****************************************************!*\
+  !*** ./.build/lib/timepicker/timepicker.module.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "datePickerTimePicker": () => (/* binding */ datePickerTimePicker)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _timepicker_provider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./timepicker.provider */ "./.build/lib/timepicker/timepicker.provider.js");
+/* harmony import */ var _date_pad_filter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./date-pad.filter */ "./.build/lib/timepicker/date-pad.filter.js");
+/* harmony import */ var _timepicker_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./timepicker.component */ "./.build/lib/timepicker/timepicker.component.js");
+/* harmony import */ var _timepicker_drop_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./timepicker-drop.component */ "./.build/lib/timepicker/timepicker-drop.component.js");
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+
+
+
+
+
+const timePickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.timePicker', [])
+    .provider('timePicker', _timepicker_provider__WEBPACK_IMPORTED_MODULE_1__.TimePickerProvider)
+    .filter('datePad', _date_pad_filter__WEBPACK_IMPORTED_MODULE_2__.datePadFilter)
+    .component('timepicker', _timepicker_component__WEBPACK_IMPORTED_MODULE_3__.timepickerComponent)
+    .component('timepickerDrop', _timepicker_drop_component__WEBPACK_IMPORTED_MODULE_4__.timePickerDropComponent);
+const datePickerTimePicker = timePickerModule.name;
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/timepicker/timepicker.provider.js":
+/*!******************************************************!*\
+  !*** ./.build/lib/timepicker/timepicker.provider.js ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "TimePickerProvider": () => (/* binding */ TimePickerProvider)
+/* harmony export */ });
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+class TimePickerProvider {
+    constructor() {
+        this.options = {
+            pickHours: true,
+            pickMinutes: true,
+            pickSeconds: true,
+            showIcon: true,
+            hideOnPick: false,
+            hours: [],
+            minutes: []
+        };
+        const hours = [], minutes = [];
+        let i, j;
+        for (i = 0; i < 10; i++) {
+            const row = [], row2 = [];
+            for (j = 0; j < 6; j++) {
+                if (i < 6 && j < 4) {
+                    const hours = (i * 4) + j;
+                    row.push({
+                        hour: hours < 10 ? '0' + hours : hours
+                    });
+                }
+                const minute = (i * 6) + j;
+                row2.push({
+                    minute: minute < 10 ? '0' + minute : minute
+                });
+            }
+            hours.push(row);
+            minutes.push(row2);
+        }
+        this.options.hours = hours;
+        this.options.minutes = minutes;
+    }
+    $get() {
+        return this.options;
+    }
+}
 
 
 
@@ -1336,15 +1735,18 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "DatePickerProvider": () => (/* reexport safe */ _lib_datepicker_datepicker_provider__WEBPACK_IMPORTED_MODULE_1__.DatePickerProvider),
+/* harmony export */   "TimePickerProvider": () => (/* reexport safe */ _lib_timepicker_timepicker_provider__WEBPACK_IMPORTED_MODULE_2__.TimePickerProvider),
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _lib_plugin_module__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./lib/plugin.module */ "./.build/lib/plugin.module.js");
 /* harmony import */ var _lib_datepicker_datepicker_provider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./lib/datepicker/datepicker.provider */ "./.build/lib/datepicker/datepicker.provider.js");
+/* harmony import */ var _lib_timepicker_timepicker_provider__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./lib/timepicker/timepicker.provider */ "./.build/lib/timepicker/timepicker.provider.js");
 /*
  * Angular DatePicker & TimePicker plugin for AngularJS
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
  * License: MIT
  */
+
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_lib_plugin_module__WEBPACK_IMPORTED_MODULE_0__.datePicker);

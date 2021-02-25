@@ -5,7 +5,8 @@
  */
 import * as angular from 'angular';
 import {datePickerDatePicker} from './datepicker/datepicker.module';
+import {datePickerTimePicker} from './timepicker/timepicker.module';
 
-const datepickerModule = angular.module('datePicker', [datePickerDatePicker, 'datePicker.timePicker']);
+const datepickerModule = angular.module('datePicker', [datePickerDatePicker, datePickerTimePicker]);
 
 export const datePicker = datepickerModule.name;

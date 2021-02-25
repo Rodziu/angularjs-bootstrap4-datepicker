@@ -27,7 +27,7 @@ export class DatePickerController implements IController {
     private readonly _onClick: (e: JQueryMouseEventObject) => void;
     public ngChange: () => void;
     public disabledDates?: disabledDatesFn;
-    public options: IDatePickerOptions = {};
+    public options: IDatePickerOptions | Record<string, never> = {};
 
     constructor(
         $document: IDocumentService,
