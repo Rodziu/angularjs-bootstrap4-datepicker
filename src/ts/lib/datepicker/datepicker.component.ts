@@ -20,11 +20,11 @@ export class DatePickerController implements IController {
     private readonly $parse: IParseService;
     private readonly datePicker: IDatePickerOptions;
     private datePickerService: DatePickerService;
-    private isOpen = false;
     private ngModel: string;
     private isSmall: boolean;
     private isLarge: boolean;
     private readonly _onClick: (e: JQueryMouseEventObject) => void;
+    public isOpen = false;
     public ngChange: () => void;
     public disabledDates?: disabledDatesFn;
     public options: IDatePickerOptions | Record<string, never> = {};

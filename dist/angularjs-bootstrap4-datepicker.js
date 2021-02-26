@@ -201,7 +201,7 @@ class DatePickerCalendarController {
                         this.datepicker.ngChange();
                     }
                     if (this.datepicker.options.hideOnPick !== false) {
-                        this.$timeout(function () {
+                        this.$timeout(() => {
                             this.datepicker.isOpen = false;
                         });
                     }

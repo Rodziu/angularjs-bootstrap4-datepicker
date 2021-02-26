@@ -219,7 +219,7 @@ export class DatePickerCalendarController implements IController {
                         this.datepicker.ngChange();
                     }
                     if (this.datepicker.options.hideOnPick !== false) {
-                        this.$timeout(function() { // we need to defer it for ngModel to update properly
+                        this.$timeout(() => { // we need to defer it for ngModel to update properly
                             this.datepicker.isOpen = false;
                         });
                     }

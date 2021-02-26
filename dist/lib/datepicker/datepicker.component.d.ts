@@ -13,11 +13,11 @@ export declare class DatePickerController implements IController {
     private readonly $parse;
     private readonly datePicker;
     private datePickerService;
-    private isOpen;
     private ngModel;
     private isSmall;
     private isLarge;
     private readonly _onClick;
+    isOpen: boolean;
     ngChange: () => void;
     disabledDates?: disabledDatesFn;
     options: IDatePickerOptions | Record<string, never>;
