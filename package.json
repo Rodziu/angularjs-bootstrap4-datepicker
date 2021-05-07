@@ -14,11 +14,11 @@
   "author": "Mateusz Rohde <mateusz.rohde@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.3",
     "@types/angular": "^1.8.1",
     "angular": "^1.8.2",
     "bootstrap": "^4.3.1",
-    "date-extensions": "^3.0.2",
-    "font-awesome": "^4.7.0"
+    "date-extensions": "^3.0.2"
   },
   "devDependencies": {
     "@rodziu/gulp-ng-annotate-patched": "^1.0.0",
