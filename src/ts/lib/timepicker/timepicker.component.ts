@@ -15,7 +15,7 @@ export class TimePickerComponentController implements IController {
     private $document: IDocumentService;
     private $scope: IScope;
     private $element: JQLite;
-    private readonly $attrs: IAttributes;
+    public readonly $attrs: IAttributes;
     private readonly $parse: IParseService;
     private readonly timePicker: ITimePickerOptions;
     private isRequired: boolean;

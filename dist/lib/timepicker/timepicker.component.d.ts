@@ -7,7 +7,7 @@ export declare class TimePickerComponentController implements IController {
     private $document;
     private $scope;
     private $element;
-    private readonly $attrs;
+    readonly $attrs: IAttributes;
     private readonly $parse;
     private readonly timePicker;
     private isRequired;

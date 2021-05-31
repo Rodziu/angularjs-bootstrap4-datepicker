@@ -23,6 +23,7 @@ app.controller('exampleCtrl', ['$scope', function($scope){
 	$scope.time2 = '59:59';
 	$scope.time3 = '59';
 	$scope.time4 = '23:59';
+	$scope.time5 = 'invalid time';
 }]);
 app.directive('formText', [function(){
 	// noinspection JSUnusedGlobalSymbols

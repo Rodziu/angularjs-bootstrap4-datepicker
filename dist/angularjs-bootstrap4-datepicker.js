@@ -12,6 +12,73 @@ return /******/ (() => { // webpackBootstrap
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./.build/lib/core/core.module.js":
+/*!****************************************!*\
+  !*** ./.build/lib/core/core.module.js ***!
+  \****************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "datePickerCore": () => (/* binding */ datePickerCore)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _datepicker_core_service__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./datepicker-core.service */ "./.build/lib/core/datepicker-core.service.js");
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+
+
+const datePickerCoreModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.core', [])
+    .factory('datePickerCoreService', _datepicker_core_service__WEBPACK_IMPORTED_MODULE_1__.DatePickerCoreService);
+const datePickerCore = datePickerCoreModule.name;
+
+
+
+/***/ }),
+
+/***/ "./.build/lib/core/datepicker-core.service.js":
+/*!****************************************************!*\
+  !*** ./.build/lib/core/datepicker-core.service.js ***!
+  \****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "DatePickerCoreService": () => (/* binding */ DatePickerCoreService)
+/* harmony export */ });
+/*
+ * Angular DatePicker & TimePicker plugin for AngularJS
+ * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
+ * License: MIT
+ */
+class DatePickerCoreService {
+    constructor() {
+        this.inputAttributes = ['required', 'disabled', 'readonly'];
+    }
+    mimicAttributes(element, controller) {
+        this.inputAttributes.forEach((attribute) => {
+            controller.$attrs.$observe(attribute, (value) => {
+                if (attribute === 'disabled') {
+                    controller.isDisabled = value;
+                }
+                else if (attribute === 'required') {
+                    controller.isRequired = value;
+                    return;
+                }
+                element.attr(attribute, value ? attribute : null);
+            });
+        });
+    }
+}
+
+
+
+/***/ }),
+
 /***/ "./.build/lib/datepicker/datepicker-calendar.component.js":
 /*!****************************************************************!*\
   !*** ./.build/lib/datepicker/datepicker-calendar.component.js ***!
@@ -275,55 +342,50 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * @ngInject
  */
-function datepickerInputDirective(datePicker) {
-    const inputAttributes = ['required', 'disabled', 'readonly'];
+function datepickerInputDirective(datePicker, datePickerCoreService) {
     return {
         restrict: 'A',
         require: ['ngModel', '^datepicker'],
         link: function (scope, element, attrs, ctrl) {
             const [ngModel, datepicker] = ctrl;
-            for (let i = 0; i < inputAttributes.length; i++) {
-                (function (attribute) {
-                    datepicker.$attrs.$observe(attribute, function (value) {
-                        if (attribute === 'disabled') {
-                            datepicker.isDisabled = value;
-                        }
-                        else if (attribute === 'required') {
-                            datepicker.isRequired = value;
-                            return;
-                        }
-                        element.attr(attribute, value);
-                    });
-                }(inputAttributes[i]));
-            }
+            datePickerCoreService.mimicAttributes(element, datepicker);
             const format = 'format' in datepicker.$attrs ? datepicker.$attrs['format'] : datePicker.format, modelFormat = 'modelFormat' in datepicker.$attrs
                 ? datepicker.$attrs['modelFormat'] : datePicker.modelFormat;
-            ngModel.$parsers.push(_dateParser(format, modelFormat));
-            ngModel.$formatters.push(_dateParser(modelFormat, format));
-            //////
-            function _dateParser(myFormat, toFormat) {
-                return (value) => {
-                    let isValid = true;
-                    if (angular__WEBPACK_IMPORTED_MODULE_0__.isString(value)
-                        && angular__WEBPACK_IMPORTED_MODULE_0__.isDefined(datepicker.isEnabledDate)
-                        && value !== '') {
-                        const date = date_extensions__WEBPACK_IMPORTED_MODULE_1___default().createFromFormat(myFormat, value);
-                        if (date.isValid()) {
-                            value = date.format(toFormat);
-                            isValid = datepicker.isEnabledDate(date, 'day');
+            ngModel.$parsers.push((date) => _convertDate(date, format, modelFormat));
+            ngModel.$formatters.push((date) => _convertDate(date, modelFormat, format));
+            ngModel.$validators.date = (modelValue) => {
+                let isValid = false;
+                if (angular__WEBPACK_IMPORTED_MODULE_0__.isUndefined(modelValue) || modelValue === '') {
+                    isValid = true;
+                }
+                else {
+                    const dateObj = _convertDate(modelValue, modelFormat);
+                    if (dateObj instanceof (date_extensions__WEBPACK_IMPORTED_MODULE_1___default())) {
+                        if (angular__WEBPACK_IMPORTED_MODULE_0__.isDefined(datepicker.isEnabledDate)) {
+                            isValid = datepicker.isEnabledDate(dateObj, 'day');
                         }
                         else {
-                            isValid = false;
+                            isValid = true;
                         }
                     }
-                    element[0].setCustomValidity(isValid ? '' : ' ');
-                    return value;
-                };
+                }
+                element[0].setCustomValidity(isValid ? '' : ' ');
+                return isValid;
+            };
+            function _convertDate(date, inFormat, outFormat) {
+                if (angular__WEBPACK_IMPORTED_MODULE_0__.isString(date)
+                    && date !== '') {
+                    const dateObj = date_extensions__WEBPACK_IMPORTED_MODULE_1___default().createFromFormat(inFormat, date);
+                    if (dateObj.isValid()) {
+                        return outFormat ? dateObj.format(outFormat) : dateObj;
+                    }
+                }
+                return date;
             }
         }
     };
 }
-datepickerInputDirective.$inject = ["datePicker"];
+datepickerInputDirective.$inject = ["datePicker", "datePickerCoreService"];
 
 
 
@@ -453,6 +515,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _datepicker_calendar_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./datepicker-calendar.component */ "./.build/lib/datepicker/datepicker-calendar.component.js");
 /* harmony import */ var _datepicker_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./datepicker.component */ "./.build/lib/datepicker/datepicker.component.js");
 /* harmony import */ var _datepicker_input_directive__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./datepicker-input.directive */ "./.build/lib/datepicker/datepicker-input.directive.js");
+/* harmony import */ var _core_core_module__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../core/core.module */ "./.build/lib/core/core.module.js");
 /*
  * Angular DatePicker & TimePicker plugin for AngularJS
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
@@ -464,7 +527,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const datepickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.datePicker', [])
+
+const datepickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.datePicker', [_core_core_module__WEBPACK_IMPORTED_MODULE_6__.datePickerCore])
     .provider('datePicker', _datepicker_provider__WEBPACK_IMPORTED_MODULE_1__.DatePickerProvider)
     .factory('datePickerService', _datepicker_service__WEBPACK_IMPORTED_MODULE_2__.DatePickerService)
     .component('datepickerCalendar', _datepicker_calendar_component__WEBPACK_IMPORTED_MODULE_3__.datepickerCalendarComponent)
@@ -822,6 +886,60 @@ const timePickerDropComponent = {
 
 /***/ }),
 
+/***/ "./.build/lib/timepicker/timepicker-input.directive.js":
+/*!*************************************************************!*\
+  !*** ./.build/lib/timepicker/timepicker-input.directive.js ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "timepickerInputDirective": () => (/* binding */ timepickerInputDirective)
+/* harmony export */ });
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! angular */ "angular");
+/* harmony import */ var angular__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(angular__WEBPACK_IMPORTED_MODULE_0__);
+
+/**
+ * @ngInject
+ */
+function timepickerInputDirective(datePickerCoreService) {
+    return {
+        restrict: 'A',
+        require: ['ngModel', '^timepicker'],
+        link: function (scope, element, attrs, ctrl) {
+            const [ngModel, timepicker] = ctrl;
+            datePickerCoreService.mimicAttributes(element, timepicker);
+            const formatParts = [];
+            if (timepicker.options.pickHours) {
+                formatParts.push('([0-1]?[0-9]|2[0-3])');
+            }
+            if (timepicker.options.pickMinutes) {
+                formatParts.push('[0-5][0-9]');
+            }
+            if (timepicker.options.pickSeconds) {
+                formatParts.push('[0-5][0-9]');
+            }
+            const formatRegex = new RegExp(`^${formatParts.join(':')}$`);
+            ngModel.$validators.time = (modelValue) => {
+                let isValid = false;
+                if (angular__WEBPACK_IMPORTED_MODULE_0__.isUndefined(modelValue) || modelValue === '') {
+                    isValid = true;
+                }
+                else if (angular__WEBPACK_IMPORTED_MODULE_0__.isString(modelValue)) {
+                    isValid = formatRegex.test(modelValue);
+                }
+                element[0].setCustomValidity(isValid ? '' : ' ');
+                return isValid;
+            };
+        }
+    };
+}
+timepickerInputDirective.$inject = ["datePickerCoreService"];
+
+
+
+/***/ }),
+
 /***/ "./.build/lib/timepicker/timepicker.component.js":
 /*!*******************************************************!*\
   !*** ./.build/lib/timepicker/timepicker.component.js ***!
@@ -918,7 +1036,7 @@ const timepickerComponent = {
         ngChange: '&?',
         placeholder: '@?'
     },
-    template:'<div class="dropdown" ng-class="{ \'input-group\': tpCtrl.options.showIcon, \'input-group-sm\': tpCtrl.isSmall, \'input-group-lg\': tpCtrl.isLarge, \'show\': tpCtrl.isOpen}"><input type="text" class="form-control" ng-model="tpCtrl.ngModel" ng-required="tpCtrl.isRequired" ng-attr-placeholder="{{tpCtrl.placeholder}}" ng-click="tpCtrl.isOpen = true" readonly><ul class="dropdown-menu dropdown-menu-right angular-timepicker" ng-click="$event.stopPropagation()" ng-class="{\'show\': tpCtrl.isOpen}"><li ng-if="tpCtrl.isOpen"><timepicker-drop ng-model="tpCtrl.ngModel" pick-hours="tpCtrl.pickHours" pick-minutes="tpCtrl.pickMinutes" pick-seconds="tpCtrl.pickSeconds"></timepicker-drop></li></ul><span class="input-group-append" ng-show="::tpCtrl.options.showIcon"><button type="button" class="btn btn-outline-secondary" data-ng-disabled="tpCtrl.isDisabled" ng-click="tpCtrl.isOpen = true"><i class="fa fa-clock"></i></button></span></div>',
+    template:'<div class="dropdown" ng-class="{ \'input-group\': tpCtrl.options.showIcon, \'input-group-sm\': tpCtrl.isSmall, \'input-group-lg\': tpCtrl.isLarge, \'show\': tpCtrl.isOpen}"><input type="text" class="form-control" ng-model="tpCtrl.ngModel" ng-required="tpCtrl.isRequired" ng-attr-placeholder="{{tpCtrl.placeholder}}" timepicker-input ng-click="tpCtrl.isOpen = true"><ul class="dropdown-menu dropdown-menu-right angular-timepicker" ng-click="$event.stopPropagation()" ng-class="{\'show\': tpCtrl.isOpen}"><li ng-if="tpCtrl.isOpen"><timepicker-drop ng-model="tpCtrl.ngModel" pick-hours="tpCtrl.pickHours" pick-minutes="tpCtrl.pickMinutes" pick-seconds="tpCtrl.pickSeconds"></timepicker-drop></li></ul><span class="input-group-append" ng-show="::tpCtrl.options.showIcon"><button type="button" class="btn btn-outline-secondary" data-ng-disabled="tpCtrl.isDisabled" ng-click="tpCtrl.isOpen = true"><i class="fa fa-clock"></i></button></span></div>',
     /**
      * @property tpCtrl
      */
@@ -946,6 +1064,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _date_pad_filter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./date-pad.filter */ "./.build/lib/timepicker/date-pad.filter.js");
 /* harmony import */ var _timepicker_component__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./timepicker.component */ "./.build/lib/timepicker/timepicker.component.js");
 /* harmony import */ var _timepicker_drop_component__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./timepicker-drop.component */ "./.build/lib/timepicker/timepicker-drop.component.js");
+/* harmony import */ var _core_core_module__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../core/core.module */ "./.build/lib/core/core.module.js");
+/* harmony import */ var _timepicker_timepicker_input_directive__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../timepicker/timepicker-input.directive */ "./.build/lib/timepicker/timepicker-input.directive.js");
 /*
  * Angular DatePicker & TimePicker plugin for AngularJS
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
@@ -956,11 +1076,14 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const timePickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.timePicker', [])
+
+
+const timePickerModule = angular__WEBPACK_IMPORTED_MODULE_0__.module('datePicker.timePicker', [_core_core_module__WEBPACK_IMPORTED_MODULE_5__.datePickerCore])
     .provider('timePicker', _timepicker_provider__WEBPACK_IMPORTED_MODULE_1__.TimePickerProvider)
     .filter('datePad', _date_pad_filter__WEBPACK_IMPORTED_MODULE_2__.datePadFilter)
     .component('timepicker', _timepicker_component__WEBPACK_IMPORTED_MODULE_3__.timepickerComponent)
-    .component('timepickerDrop', _timepicker_drop_component__WEBPACK_IMPORTED_MODULE_4__.timePickerDropComponent);
+    .component('timepickerDrop', _timepicker_drop_component__WEBPACK_IMPORTED_MODULE_4__.timePickerDropComponent)
+    .directive('timepickerInput', _timepicker_timepicker_input_directive__WEBPACK_IMPORTED_MODULE_6__.timepickerInputDirective);
 const datePickerTimePicker = timePickerModule.name;
 
 

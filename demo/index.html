@@ -20,7 +20,7 @@
             margin: 0 0 20px;
             border-bottom: 1px solid #eee;
         }
-        .form-control.ng-invalid-date {
+		.form-control.ng-invalid-date, .form-control.ng-invalid-time {
             border-color: #a94442;
         }
         a[ng-click] { cursor: pointer; }
@@ -100,37 +100,35 @@
 			</small>
 			<datepicker ng-model="placeholder" placeholder="Placeholder text"></datepicker>
 		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Custom format
+			</small>
+			<datepicker ng-model="dateFormat" format="j F Y"></datepicker>
+			<pre class="m-0">model: {{dateFormat}}</pre>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Custom model-format
+			</small>
+			<datepicker ng-model="dateFormatModel" model-format="j F Y"></datepicker>
+			<pre class="m-0">model: {{dateFormatModel}}</pre>
+		</div>
 	</div>
 	<div class="row">
-		<div class="col-sm-6">
-			<div class="form-group">
-				<small class="form-text">
-					Custom input group
-				</small>
-				<div class="input-group flex-nowrap">
-					<span class="input-group-prepend"><button class="btn btn-outline-secondary">Custom</button></span>
-					<datepicker ng-model="date"></datepicker>
-					<div class="input-group-append">
-						<span class="input-group-text">Custom</span>
-					</div>
+		<div class="form-group col-sm-8">
+			<small class="form-text">
+				Custom input group
+			</small>
+			<div class="input-group flex-nowrap">
+				<span class="input-group-prepend"><button class="btn btn-outline-secondary">Custom</button></span>
+				<datepicker ng-model="date"></datepicker>
+				<div class="input-group-append">
+					<span class="input-group-text">Custom</span>
 				</div>
 			</div>
-			<div class="form-group">
-				<small class="form-text">
-					Custom format
-				</small>
-				<datepicker ng-model="dateFormat" format="j F Y"></datepicker>
-				<pre>model: {{dateFormat}}</pre>
-			</div>
-			<div class="form-group">
-				<small class="form-text">
-					Custom model-format
-				</small>
-				<datepicker ng-model="dateFormatModel" model-format="j F Y"></datepicker>
-				<pre>model: {{dateFormatModel}}</pre>
-			</div>
 		</div>
-		<div class="form-group col-sm-6">
+		<div class="form-group col-sm-4">
 			<small class="form-text">
 				Calendar only
 			</small>
@@ -187,6 +185,20 @@
 		</div>
 		<div class="form-group col-sm-4">
 			<small class="form-text">
+				Invalid format
+			</small>
+			<timepicker ng-model="time5" required></timepicker>
+		</div>
+		<div class="form-group col-sm-4">
+			<small class="form-text">
+				Placeholder
+			</small>
+			<timepicker ng-model="timePlaceholder" placeholder="Placeholder text"></timepicker>
+		</div>
+	</div>
+	<div class="row">
+		<div class="form-group col-sm-8">
+			<small class="form-text">
 				Custom input group
 			</small>
 			<div class="input-group flex-nowrap">
@@ -201,19 +213,12 @@
 		</div>
 		<div class="form-group col-sm-4">
 			<small class="form-text">
-				Placeholder
-			</small>
-			<timepicker ng-model="timePlaceholder" placeholder="Placeholder text"></timepicker>
-		</div>
-	</div>
-	<div class="row">
-		<div class="form-group col-sm-4">
-			<small class="form-text">
 				Picker only
 			</small>
 			<timepicker-drop ng-model="time"></timepicker-drop>
 		</div>
 	</div>
+	<div class="mb-3"></div>
 </div>
 <script type="text/javascript" src="../node_modules/angular/angular.min.js"></script>
 <script type="text/javascript" src="../node_modules/date-extensions/dist/date-extended.js"></script>

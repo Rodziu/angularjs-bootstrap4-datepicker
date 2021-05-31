@@ -3,62 +3,73 @@
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
  * License: MIT
  */
-import {IController, IDirective} from 'angular';
+import {IDirective, INgModelController} from 'angular';
 import {IDatePickerOptions} from './datepicker.provider';
 import * as angular from 'angular';
 import DateExtended from 'date-extensions';
+import {DatePickerCoreService} from 'ts/lib/core/datepicker-core.service';
+import {DatePickerController} from 'ts/lib/datepicker/datepicker.component';
 
 /**
  * @ngInject
  */
-export function datepickerInputDirective(datePicker: IDatePickerOptions): IDirective {
-    const inputAttributes = ['required', 'disabled', 'readonly'];
-
+export function datepickerInputDirective(
+    datePicker: IDatePickerOptions,
+    datePickerCoreService: DatePickerCoreService
+): IDirective {
     return {
         restrict: 'A',
         require: ['ngModel', '^datepicker'],
-        link: function(scope, element, attrs, ctrl: IController[]) {
+        link: function(
+            scope, element, attrs, ctrl: [INgModelController, DatePickerController]
+        ) {
             const [ngModel, datepicker] = ctrl;
-            for (let i = 0; i < inputAttributes.length; i++) {
-                (function(attribute) {
-                    datepicker.$attrs.$observe(attribute, function(value) {
-                        if (attribute === 'disabled') {
-                            datepicker.isDisabled = value;
-                        } else if (attribute === 'required') {
-                            datepicker.isRequired = value;
-                            return;
-                        }
-                        element.attr(attribute, value);
-                    });
-                }(inputAttributes[i]));
-            }
-            const format = 'format' in datepicker.$attrs ? datepicker.$attrs['format'] : datePicker.format,
-                modelFormat = 'modelFormat' in datepicker.$attrs
+            datePickerCoreService.mimicAttributes(element, datepicker);
+
+            const format: string = 'format' in datepicker.$attrs ? datepicker.$attrs['format'] : datePicker.format,
+                modelFormat: string = 'modelFormat' in datepicker.$attrs
                     ? datepicker.$attrs['modelFormat'] : datePicker.modelFormat;
-            ngModel.$parsers.push(_dateParser(format, modelFormat));
-            ngModel.$formatters.push(_dateParser(modelFormat, format));
 
-            //////
+            ngModel.$parsers.push((date: unknown) => _convertDate(date, format, modelFormat));
+            ngModel.$formatters.push((date: unknown) => _convertDate(date, modelFormat, format));
+            ngModel.$validators.date = (modelValue: unknown): boolean => {
+                let isValid = false;
+                if (angular.isUndefined(modelValue) || modelValue === '') {
+                    isValid = true;
+                } else {
+                    const dateObj = _convertDate(modelValue, modelFormat);
 
-            function _dateParser(myFormat, toFormat) {
-                return (value) => {
-                    let isValid = true;
-                    if (
-                        angular.isString(value)
-                        && angular.isDefined(datepicker.isEnabledDate)
-                        && value !== ''
-                    ) {
-                        const date = DateExtended.createFromFormat(myFormat, value);
-                        if (date.isValid()) {
-                            value = date.format(toFormat);
-                            isValid = datepicker.isEnabledDate(date, 'day');
+                    if (dateObj instanceof DateExtended) {
+                        if (angular.isDefined(datepicker.isEnabledDate)) {
+                            isValid = datepicker.isEnabledDate(dateObj, 'day');
                         } else {
-                            isValid = false;
+                            isValid = true;
                         }
                     }
-                    (element[0] as HTMLInputElement).setCustomValidity(isValid ? '' : ' ');
-                    return value;
-                };
+                }
+
+                (element[0] as HTMLInputElement).setCustomValidity(isValid ? '' : ' ');
+                return isValid;
+            }
+
+            //////
+            function _convertDate(date: unknown, inFormat: string): DateExtended | unknown;
+            function _convertDate(date: unknown, inFormat: string, outFormat: string): string | unknown;
+            function _convertDate(
+                date: unknown,
+                inFormat: string,
+                outFormat?: string
+            ): string | DateExtended | unknown {
+                if (
+                    angular.isString(date)
+                    && date !== ''
+                ) {
+                    const dateObj = DateExtended.createFromFormat(inFormat, date);
+                    if (dateObj.isValid()) {
+                        return outFormat ? dateObj.format(outFormat) : dateObj;
+                    }
+                }
+                return date;
             }
         }
     };

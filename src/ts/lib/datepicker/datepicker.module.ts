@@ -9,8 +9,9 @@ import {DatePickerService} from './datepicker.service';
 import {datepickerCalendarComponent} from './datepicker-calendar.component';
 import {datepickerComponent} from './datepicker.component';
 import {datepickerInputDirective} from './datepicker-input.directive';
+import {datePickerCore} from '../core/core.module';
 
-const datepickerModule = angular.module('datePicker.datePicker', [])
+const datepickerModule = angular.module('datePicker.datePicker', [datePickerCore])
     .provider('datePicker', DatePickerProvider)
     .factory('datePickerService', DatePickerService)
     .component('datepickerCalendar', datepickerCalendarComponent)
