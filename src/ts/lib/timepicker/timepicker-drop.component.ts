@@ -3,7 +3,7 @@
  * Copyright (c) 2016-2021 Rodziu <mateusz.rohde@gmail.com>
  * License: MIT
  */
-import {IComponentOptions, ITimeoutService} from 'angular';
+import {IComponentOptions, INgModelController, ITimeoutService} from 'angular';
 import {ITimePickerOptions} from './timepicker.provider';
 import * as angular from 'angular';
 import {TimePickerComponentController} from './timepicker.component';
@@ -26,6 +26,7 @@ export class TimePickerDropComponentController {
     private ngModel: string;
     private _ngModel: string;
     private timepicker: TimePickerComponentController;
+    private ngModelCtrl: INgModelController;
 
     constructor(
         $timeout: ITimeoutService,
@@ -135,6 +136,7 @@ export class TimePickerDropComponentController {
             val.push(this.seconds < 10 ? '0' + this.seconds : this.seconds);
         }
         this.ngModel = val.join(':');
+        this.ngModelCtrl.$setViewValue(this.ngModel);
         if (this.timepicker !== null) {
             if (angular.isFunction(this.timepicker.ngChange)) {
                 this.timepicker.ngChange();
@@ -163,12 +165,9 @@ export const timePickerDropComponent: IComponentOptions = {
     },
     templateUrl: 'src/templates/timepicker-drop.html',
     controllerAs: 'ctrl',
-    /**
-     * @property ngChange
-     * @property {{}} timepicker
-     */
     require: {
-        timepicker: '?^timepicker'
+        timepicker: '?^timepicker',
+        ngModelCtrl: 'ngModel',
     },
     controller: TimePickerDropComponentController
 };

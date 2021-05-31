@@ -4,7 +4,7 @@
  * License: MIT
  */
 
-import {IAttributes, IComponentOptions, IController, IDocumentService, IScope} from 'angular';
+import {IAttributes, IComponentOptions, IController, IDocumentService, IParseService, IScope} from 'angular';
 import {ITimePickerOptions} from './timepicker.provider';
 import * as angular from 'angular';
 
@@ -16,6 +16,7 @@ export class TimePickerComponentController implements IController {
     private $scope: IScope;
     private $element: JQLite;
     private readonly $attrs: IAttributes;
+    private readonly $parse: IParseService;
     private readonly timePicker: ITimePickerOptions;
     private isRequired: boolean;
     private _onClick: (e: JQueryMouseEventObject) => void;
@@ -24,18 +25,21 @@ export class TimePickerComponentController implements IController {
     public options: ITimePickerOptions | Record<string, never> = {};
     public ngChange: () => void;
     public isOpen: boolean;
+    private ngModel: string;
 
     constructor(
         $document: IDocumentService,
         $scope: IScope,
         $element: JQLite,
         $attrs: IAttributes,
+        $parse: IParseService,
         timePicker: ITimePickerOptions
     ) {
         this.$document = $document;
         this.$scope = $scope;
         this.$element = $element;
         this.$attrs = $attrs;
+        this.$parse = $parse;
         this.timePicker = timePicker;
     }
 
@@ -52,6 +56,14 @@ export class TimePickerComponentController implements IController {
                 this.options[d] = v;
             }
         });
+        if (angular.isFunction(this.ngChange)) {
+            const originalChange = this.ngChange,
+                getter = this.$parse(this.$attrs['ngModel']);
+            this.ngChange = () => {
+                getter.assign(this.$scope.$parent, this.ngModel);
+                originalChange();
+            };
+        }
         this.isOpen = false;
         this.$attrs.$observe('required', (value) => {
             this.isRequired = !!value;

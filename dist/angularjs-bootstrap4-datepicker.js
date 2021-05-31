@@ -783,6 +783,7 @@ class TimePickerDropComponentController {
             val.push(this.seconds < 10 ? '0' + this.seconds : this.seconds);
         }
         this.ngModel = val.join(':');
+        this.ngModelCtrl.$setViewValue(this.ngModel);
         if (this.timepicker !== null) {
             if (angular__WEBPACK_IMPORTED_MODULE_0__.isFunction(this.timepicker.ngChange)) {
                 this.timepicker.ngChange();
@@ -810,12 +811,9 @@ const timePickerDropComponent = {
     },
     template:'<table class="table table-sm table-timepicker" ng-switch="ctrl.mode"><tbody ng-switch-when="picker"><tr><td ng-if="ctrl.pickHours"><a ng-click="ctrl.change(\'hours\', true)"><i class="fa fa-chevron-up"></i></a></td><td ng-if="ctrl.pickMinutes"><a ng-click="ctrl.change(\'minutes\', true)"><i class="fa fa-chevron-up"></i></a></td><td ng-if="ctrl.pickSeconds"><a ng-click="ctrl.change(\'seconds\', true)"><i class="fa fa-chevron-up"></i></a></td></tr><tr class="timepicker-values"><td ng-if="ctrl.pickHours"><a ng-click="ctrl.setMode(\'hours\')">{{ctrl.hours | datePad}}</a></td><td ng-if="ctrl.pickMinutes"><a ng-click="ctrl.setMode(\'minutes\')">{{ctrl.minutes | datePad}}</a></td><td ng-if="ctrl.pickSeconds"><a ng-click="ctrl.setMode(\'seconds\')">{{ctrl.seconds | datePad}}</a></td></tr><tr><td ng-if="ctrl.pickHours"><a ng-click="ctrl.change(\'hours\')"><i class="fa fa-chevron-down"></i></a></td><td ng-if="ctrl.pickMinutes"><a ng-click="ctrl.change(\'minutes\')"><i class="fa fa-chevron-down"></i></a></td><td ng-if="ctrl.pickSeconds"><a ng-click="ctrl.change(\'seconds\')"><i class="fa fa-chevron-down"></i></a></td></tr></tbody><tbody ng-switch-when="hours"><tr ng-repeat="h in ::ctrl.hoursArray" class="hours"><td ng-repeat="hh in ::h"><a ng-click="ctrl.pick(\'hours\', hh.hour)">{{::hh.hour}}</a></td></tr></tbody><tbody ng-switch-default><tr ng-repeat="m in ::ctrl.minutesArray" class="hours"><td ng-repeat="mm in ::m"><a ng-click="ctrl.pick(ctrl.mode, mm.minute)">{{::mm.minute}}</a></td></tr></tbody></table>',
     controllerAs: 'ctrl',
-    /**
-     * @property ngChange
-     * @property {{}} timepicker
-     */
     require: {
-        timepicker: '?^timepicker'
+        timepicker: '?^timepicker',
+        ngModelCtrl: 'ngModel',
     },
     controller: TimePickerDropComponentController
 };
@@ -847,12 +845,13 @@ __webpack_require__.r(__webpack_exports__);
  * @ngInject
  */
 class TimePickerComponentController {
-    constructor($document, $scope, $element, $attrs, timePicker) {
+    constructor($document, $scope, $element, $attrs, $parse, timePicker) {
         this.options = {};
         this.$document = $document;
         this.$scope = $scope;
         this.$element = $element;
         this.$attrs = $attrs;
+        this.$parse = $parse;
         this.timePicker = timePicker;
     }
     $onInit() {
@@ -870,6 +869,13 @@ class TimePickerComponentController {
                 this.options[d] = v;
             }
         });
+        if (angular__WEBPACK_IMPORTED_MODULE_0__.isFunction(this.ngChange)) {
+            const originalChange = this.ngChange, getter = this.$parse(this.$attrs['ngModel']);
+            this.ngChange = () => {
+                getter.assign(this.$scope.$parent, this.ngModel);
+                originalChange();
+            };
+        }
         this.isOpen = false;
         this.$attrs.$observe('required', (value) => {
             this.isRequired = !!value;
@@ -890,7 +896,7 @@ class TimePickerComponentController {
         this.$document.off('click', this._onClick);
     }
 }
-TimePickerComponentController.$inject = ["$document", "$scope", "$element", "$attrs", "timePicker"];
+TimePickerComponentController.$inject = ["$document", "$scope", "$element", "$attrs", "$parse", "timePicker"];
 /**
  * @ngdoc component
  * @name timepicker

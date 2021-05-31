@@ -18,6 +18,7 @@ export declare class TimePickerDropComponentController {
     private ngModel;
     private _ngModel;
     private timepicker;
+    private ngModelCtrl;
     constructor($timeout: ITimeoutService, timePicker: ITimePickerOptions);
     $onInit(): void;
     $doCheck(): void;
